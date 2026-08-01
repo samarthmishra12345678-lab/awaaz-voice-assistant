@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🎙️ Awaaz — Sirf Boliye, Kaam Ho Jaayega</title>
+<meta name="theme-color" content="#ff7a45" />
+<meta name="description" content="Awaaz — Voice assistant for elderly & those who can't use apps. Hindi/Marathi/English. Reminders, weather, SOS, scam-check — all by voice." />
+<link rel="manifest" href='data:application/manifest+json,{"name":"Awaaz - Voice Assistant","short_name":"Awaaz","start_url":".","display":"standalone","background_color":"%23fff7f0","theme_color":"%23ff7a45","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 192 192%27%3E%3Crect width=%27192%27 height=%27192%27 rx=%2740%27 fill=%27%23ff7a45%27/%3E%3Ctext x=%2796%27 y=%27130%27 font-size=%27110%27 text-anchor=%27middle%27%3E%F0%9F%8E%99%EF%B8%8F%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"}]}' />
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--bg:#fff7f0;--card:#fff;--accent:#ff7a45;--accent2:#ff5c8a;--green:#2fb765;--blue:#3d7bff;--red:#ff4d4d;--ink:#2d2036;--muted:#7a6b80;--line:#ffe3d3;}
+  body.dark{--bg:#000;--card:#111;--accent:#ffb066;--accent2:#ff85ad;--green:#4be08a;--blue:#7aa8ff;--ink:#fff;--muted:#c9bcd0;--line:#333;}
+  body.dark .cmd{background:#1a1a1a;}
+  body.dark .note-item{background:#1a1a1a;}
+  body.dark .lang-btn,body.dark .access-btn{background:#1a1a1a;}
+  body.dark .note-item .when{background:#2a1a10;}
+  body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding:16px;-webkit-tap-highlight-color:transparent;}
+  .wrap{max-width:520px;margin:0 auto;}
+  header{text-align:center;padding:12px 0 6px;}
+  .logo{font-size:2.6rem;font-weight:900;letter-spacing:-1px;}
+  .logo span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .tagline{color:var(--muted);font-size:1.1rem;margin-top:4px;font-weight:700;}
+
+  .lang-row{display:flex;gap:8px;justify-content:center;margin:12px 0;}
+  .lang-btn{padding:7px 16px;border-radius:999px;border:2px solid var(--line);background:#fff;font-size:0.95rem;font-weight:700;cursor:pointer;color:var(--muted);}
+  .lang-btn.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;}
+
+  /* BIG MIC */
+  .mic-section{text-align:center;margin:20px 0;}
+  .mic-btn{width:190px;height:190px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 14px 40px rgba(255,92,138,0.45);font-size:5rem;color:#fff;display:grid;place-items:center;margin:0 auto;transition:transform .15s;}
+  .mic-btn:active{transform:scale(0.94);}
+  .mic-btn.listening{animation:pulse 1.1s ease-in-out infinite;background:linear-gradient(135deg,var(--red),var(--accent));}
+  @keyframes pulse{0%,100%{box-shadow:0 14px 40px rgba(255,92,138,0.45);}50%{box-shadow:0 14px 60px rgba(255,77,77,0.8),0 0 0 20px rgba(255,122,69,0.15);}}
+  .mic-label{font-size:1.5rem;font-weight:900;margin-top:16px;}
+  .mic-hint{font-size:1.05rem;color:var(--muted);margin-top:4px;}
+  .waves{display:none;justify-content:center;gap:5px;height:44px;align-items:center;margin-top:12px;}
+  .waves.show{display:flex;}
+  .waves span{width:7px;height:14px;background:var(--accent);border-radius:6px;animation:wave .9s ease-in-out infinite;}
+  .waves span:nth-child(2){animation-delay:.1s;}.waves span:nth-child(3){animation-delay:.2s;}.waves span:nth-child(4){animation-delay:.3s;}.waves span:nth-child(5){animation-delay:.4s;}
+  @keyframes wave{0%,100%{height:14px;}50%{height:42px;}}
+
+  /* conversation */
+  .convo{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:18px;margin:16px 0;min-height:100px;box-shadow:0 6px 20px rgba(255,150,100,0.12);}
+  .convo .you{font-size:1.1rem;font-weight:700;color:var(--blue);margin-bottom:8px;}
+  .convo .awaaz{font-size:1.3rem;font-weight:700;line-height:1.5;}
+  .convo .placeholder{color:var(--muted);font-size:1.05rem;text-align:center;line-height:1.6;}
+  .replay-btn{margin-top:12px;background:var(--green);color:#fff;border:none;padding:10px 20px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;display:none;}
+  .replay-btn.show{display:inline-block;}
+
+  /* saved schedule/notes */
+  .section{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px;margin:14px 0;}
+  .section h3{font-size:1.15rem;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+  .note-item{background:#fff6ee;border:2px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;font-size:1.05rem;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+  .note-item .txt{flex:1;}
+  .note-item .del{color:var(--red);cursor:pointer;font-size:1.2rem;}
+  .empty{color:var(--muted);font-size:0.95rem;text-align:center;padding:8px;}
+
+  /* commands help */
+  .cmds{background:linear-gradient(135deg,rgba(255,122,69,0.08),rgba(255,92,138,0.06));border-radius:16px;padding:16px;margin:14px 0;}
+  .cmds h3{font-size:1.05rem;margin-bottom:10px;}
+  .cmd{background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:7px;font-size:0.98rem;border-left:4px solid var(--accent);}
+  .cmd b{color:var(--accent);}
+
+  .impact{text-align:center;margin:16px 0;padding:12px;background:linear-gradient(135deg,rgba(47,183,101,0.12),rgba(61,123,255,0.1));border-radius:16px;border:1px solid rgba(47,183,101,0.25);}
+  .impact .num{font-size:1.8rem;font-weight:900;color:var(--green);}
+  .impact .lbl{font-size:0.85rem;color:var(--muted);}
+
+  footer{text-align:center;margin-top:20px;padding:14px;color:var(--muted);font-size:0.85rem;line-height:1.5;}
+  footer b{color:var(--accent);}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--ink);color:#fff;padding:14px 22px;border-radius:14px;font-size:1.05rem;font-weight:600;z-index:200;transition:transform .3s;max-width:90%;text-align:center;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+  .warn{background:#fff3cd;border:1px solid #ffd24d;color:#856404;padding:11px 14px;border-radius:12px;font-size:0.9rem;margin:10px 0;display:none;line-height:1.5;}
+  .warn.show{display:block;}
+
+  /* accessibility + SOS row */
+  .access-row{display:flex;gap:8px;justify-content:center;margin:8px 0 4px;flex-wrap:wrap;}
+  .access-btn{padding:8px 16px;border-radius:12px;border:2px solid var(--line);background:#fff;font-size:1rem;font-weight:800;cursor:pointer;color:var(--accent);}
+  .access-btn:active{transform:scale(.95);}
+  .sos-btn{padding:8px 22px;border-radius:12px;border:none;background:linear-gradient(135deg,#ff4d4d,#ff2d55);color:#fff;font-size:1.05rem;font-weight:900;cursor:pointer;box-shadow:0 6px 18px rgba(255,45,85,0.4);letter-spacing:0.5px;}
+  .sos-btn:active{transform:scale(.95);}
+
+  /* reminder alarm overlay */
+  .alarm{position:fixed;inset:0;background:rgba(255,77,77,0.96);z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:26px;color:#fff;}
+  .alarm.show{display:flex;animation:alarmPulse 1s ease-in-out infinite;}
+  @keyframes alarmPulse{0%,100%{background:rgba(255,77,77,0.96);}50%{background:rgba(255,45,85,0.99);}}
+  .alarm .ic{font-size:5rem;animation:ring .5s ease-in-out infinite;}
+  @keyframes ring{0%,100%{transform:rotate(-12deg);}50%{transform:rotate(12deg);}}
+  .alarm .msg{font-size:1.7rem;font-weight:900;margin:18px 0;line-height:1.4;}
+  .alarm .ok{background:#fff;color:#ff2d55;border:none;padding:16px 44px;border-radius:16px;font-size:1.3rem;font-weight:900;cursor:pointer;margin-top:10px;}
+
+  /* reminder time badge on notes */
+  .note-item .when{font-size:0.8rem;color:var(--accent);font-weight:800;background:#fff0e8;padding:3px 9px;border-radius:8px;margin-left:6px;white-space:nowrap;}
+
+  /* ===== ONBOARDING TUTORIAL ===== */
+  .onboard{position:fixed;inset:0;background:linear-gradient(160deg,#ff7a45,#ff5c8a);z-index:800;display:none;align-items:center;justify-content:center;padding:20px;}
+  .onboard.show{display:flex;}
+  .onboard-card{background:#fff;border-radius:26px;max-width:420px;width:100%;padding:26px 22px 22px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.35);animation:obPop .35s ease;}
+  @keyframes obPop{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .ob-lang{display:flex;gap:7px;justify-content:center;margin-bottom:14px;}
+  .ob-lang button{padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:#fff;font-weight:800;font-size:0.9rem;color:var(--muted);cursor:pointer;}
+  .ob-lang button.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;}
+  .ob-emoji{font-size:4.5rem;line-height:1;margin:6px 0 10px;animation:obWave 1.2s ease-in-out infinite;}
+  @keyframes obWave{0%,100%{transform:rotate(-8deg);}50%{transform:rotate(8deg);}}
+  .onboard-card h2{font-size:1.7rem;color:var(--ink);margin-bottom:10px;font-weight:900;}
+  .onboard-card p{font-size:1.2rem;color:var(--muted);line-height:1.55;min-height:96px;font-weight:600;}
+  .ob-listen{display:inline-flex;align-items:center;gap:7px;margin:4px auto 2px;background:var(--green);color:#fff;border:none;padding:11px 26px;border-radius:999px;font-size:1.1rem;font-weight:800;cursor:pointer;box-shadow:0 6px 18px rgba(47,183,101,0.4);}
+  .ob-listen:active{transform:scale(.96);}
+  .ob-listen.speaking{animation:obSpeak 1s ease-in-out infinite;}
+  @keyframes obSpeak{0%,100%{box-shadow:0 6px 18px rgba(47,183,101,0.4);}50%{box-shadow:0 6px 26px rgba(47,183,101,0.85),0 0 0 8px rgba(47,183,101,0.15);}}
+  .ob-dots{display:flex;gap:8px;justify-content:center;margin:16px 0 18px;}
+  .ob-dots span{width:10px;height:10px;border-radius:50%;background:var(--line);transition:.2s;}
+  .ob-dots span.on{background:var(--accent);transform:scale(1.25);}
+  .ob-btns{display:flex;gap:10px;justify-content:space-between;align-items:center;}
+  .ob-skip{background:none;border:none;color:var(--muted);font-size:1rem;font-weight:700;cursor:pointer;padding:12px 10px;}
+  .ob-next{flex:1;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border:none;padding:15px 20px;border-radius:14px;font-size:1.15rem;font-weight:900;cursor:pointer;box-shadow:0 8px 22px rgba(255,92,138,0.4);}
+  .ob-next:active{transform:scale(.97);}
+  body.dark .onboard-card{background:#1a1a1a;}
+  body.dark .ob-lang button{background:#111;}
+</style>
+</head>
+<body>
+  <!-- ===== FIRST-RUN ONBOARDING TUTORIAL ===== -->
+  <div class="onboard" id="onboard" role="dialog" aria-modal="true" aria-labelledby="obTitle">
+    <div class="onboard-card">
+      <div class="ob-lang" id="obLangRow">
+        <button onclick="obSetLang('hi')" class="active" data-l="hi">हिंदी</button>
+        <button onclick="obSetLang('mr')" data-l="mr">मराठी</button>
+        <button onclick="obSetLang('en')" data-l="en">English</button>
+      </div>
+      <div class="ob-emoji" id="obEmoji" aria-hidden="true">👋</div>
+      <h2 id="obTitle">Namaste!</h2>
+      <p id="obBody">Main Awaaz hoon.</p>
+      <button class="ob-listen" id="obListen" onclick="obSpeakStep()" aria-label="Ye padhkar sunao / Read this aloud">🔊 <span id="obListenLbl">Suno</span></button>
+      <div class="ob-dots" id="obDots" aria-hidden="true"></div>
+      <div class="ob-btns">
+        <button class="ob-skip" id="obSkip" onclick="obClose()">Skip</button>
+        <button class="ob-next" id="obNext" onclick="obNextStep()">Aage →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <header>
+      <div class="logo">🎙️ <span>Awaaz</span></div>
+      <div class="tagline" id="tagline">Sirf boliye — kaam ho jaayega</div>
+    </header>
+
+    <div class="lang-row" role="group" aria-label="Bhasha chunein / Choose language">
+      <button class="lang-btn active" data-lang="hi" onclick="setLang('hi')" aria-label="हिंदी" lang="hi">हिंदी</button>
+      <button class="lang-btn" data-lang="mr" onclick="setLang('mr')" aria-label="मराठी" lang="mr">मराठी</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')" aria-label="English" lang="en">English</button>
+    </div>
+
+    <!-- ACCESSIBILITY + SOS -->
+    <div class="access-row" role="group" aria-label="Accessibility aur emergency">
+      <button class="access-btn" onclick="changeFont(1)" title="Text bada karo" aria-label="Text bada karo / Increase text size">🔍 A+</button>
+      <button class="access-btn" onclick="changeFont(-1)" title="Text chhota karo" aria-label="Text chhota karo / Decrease text size">🔎 A−</button>
+      <button class="access-btn" onclick="toggleDark()" title="Dark mode" id="darkBtn" aria-label="Dark mode chalu/band karo / Toggle dark mode">🌗</button>
+      <button class="sos-btn" onclick="doSOS()" aria-label="Emergency SOS - madad ke liye dabayein">🆘 SOS</button>
+    </div>
+
+    <div class="warn" id="warn" role="alert"></div>
+
+    <!-- BIG MIC -->
+    <div class="mic-section">
+      <button class="mic-btn" id="micBtn" onclick="toggleMic()" aria-label="Bolne ke liye ye button dabayein / Press to speak" aria-pressed="false">🎙️</button>
+      <div class="mic-label" id="micLabel">Boliye</div>
+      <div class="mic-hint" id="micHint">Button dabao aur bolo</div>
+      <div class="waves" id="waves" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+
+    <!-- CONVERSATION -->
+    <div class="convo" role="region" aria-label="Baat-cheet / Conversation" aria-live="polite">
+      <div class="placeholder" id="convoPlaceholder">💬 Button dabaiye aur boliye...<br>Jaise: "Kal 5 baje doctor ke paas jana note karo"</div>
+      <div id="convoContent" style="display:none;">
+        <div class="you" id="youText"></div>
+        <div class="awaaz" id="awaazText"></div>
+        <button class="replay-btn" id="replayBtn" onclick="replayLast()" aria-label="Jawab phir se suno / Replay answer">🔊 Phir se suno</button>
+      </div>
+    </div>
+
+    <!-- SAVED SCHEDULE/NOTES -->
+    <div class="section" role="region" aria-label="Aapke notes aur reminders">
+      <h3>📝 <span id="notesTitle">Aapke Notes / Schedule</span></h3>
+      <div id="notesList" aria-live="polite"><div class="empty" id="notesEmpty">Abhi koi note nahi. Boliye "note karo..."</div></div>
+    </div>
+
+    <!-- COMMANDS HELP -->
+    <div class="cmds">
+      <h3 id="cmdsTitle">🗣️ Aap ye keh sakte hain:</h3>
+      <div id="cmdsList"></div>
+      <button class="access-btn" style="width:100%;margin-top:10px;" onclick="obStart()" aria-label="Tutorial dobara dekho / Show tutorial again">🎓 <span id="tutorBtn">Tutorial dobara dekho</span></button>
+    </div>
+
+    <div class="impact">
+      <div class="num" id="impactNum">0</div>
+      <div class="lbl" id="impactLbl">baar Awaaz ne aaj madad ki 💚</div>
+    </div>
+
+    <footer>
+      🎙️ <b>Awaaz</b> — Jinhe apps nahi aate, unke liye ek awaaz.<br>
+      Made with ❤️ by Ram · 👑 Samarth bhaiya
+    </footer>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- REMINDER ALARM OVERLAY -->
+  <div class="alarm" id="alarm" role="alertdialog" aria-modal="true" aria-labelledby="alarmMsg">
+    <div class="ic" aria-hidden="true">⏰</div>
+    <div class="msg" id="alarmMsg"></div>
+    <button class="ok" id="alarmOk" onclick="stopAlarm()">✓ Theek hai / OK</button>
+    <button class="ok snooze" id="alarmSnooze" onclick="snoozeAlarm()" style="background:#ffd24d;color:#7a4b00;margin-top:12px;">😴 10 min baad / Snooze</button>
+  </div>
+
+<script>
+  /* ==================== ONBOARDING TUTORIAL CONTENT ==================== */
+  // 4-step friendly first-run guide. Each step: [emoji, title, body]. Voice reads body aloud.
+  const OB = {
+    hi:{ next:"Aage →", start:"Chaliye shuru karein ✓", skip:"Chhod dein", tutor:"Tutorial dobara dekho", listen:"Suno",
+      steps:[
+        ["👋","Namaste! 🙏","Main hoon <b>Awaaz</b> — aapki apni madadgaar. Yahan bas <b>bolna</b> hi kaafi hai, koi app nahi seekhni. Chaliye 30 second mein dikhati hoon."],
+        ["🎙️","Ye bada button dabayein","Beech mein jo bada mic button hai, use dabayein aur saaf boliye. Bas — main sun kar aapka kaam kar dungi."],
+        ["⏰","Kuch bhi keh kar dekhein","Jaise boliye: <b>\"Subah 8 baje dawai yaad dilao\"</b> ya <b>\"Nagpur ka mausam batao\"</b>. Reminder sahi time par khud baj jaayega."],
+        ["🆘","Museebat mein? SOS dabayein","Upar laal <b>SOS</b> button aapko madad dega aur apno ko aapki location bhej dega. Ab aap taiyaar hain — chaliye shuru karein!"]
+      ]},
+    mr:{ next:"पुढे →", start:"चला सुरू करूया ✓", skip:"वगळा", tutor:"पुन्हा शिकवणी बघा", listen:"ऐका",
+      steps:[
+        ["👋","नमस्कार! 🙏","मी आहे <b>आवाज</b> — तुमची स्वतःची मदतनीस. इथे फक्त <b>बोलणे</b> पुरेसे आहे, कोणतेही अ‍ॅप शिकायचे नाही. चला 30 सेकंदात दाखवते."],
+        ["🎙️","हे मोठे बटण दाबा","मध्यभागी जे मोठे mic बटण आहे ते दाबा आणि स्पष्ट बोला. बस — मी ऐकून तुमचे काम करते."],
+        ["⏰","काहीही म्हणून बघा","जसे म्हणा: <b>\"सकाळी 8 वाजता औषध आठवण कर\"</b> किंवा <b>\"नागपूरचे हवामान सांग\"</b>. आठवण योग्य वेळी आपोआप वाजेल."],
+        ["🆘","अडचणीत आहात? SOS दाबा","वरती लाल <b>SOS</b> बटण तुम्हाला मदत करेल आणि तुमच्या माणसांना तुमची location पाठवेल. आता तुम्ही तयार आहात — चला सुरू करूया!"]
+      ]},
+    en:{ next:"Next →", start:"Let's start ✓", skip:"Skip", tutor:"Show tutorial again", listen:"Listen",
+      steps:[
+        ["👋","Hello! 🙏","I'm <b>Awaaz</b> — your own helper. Here, just <b>speaking</b> is enough. No app to learn. Let me show you in 30 seconds."],
+        ["🎙️","Press this big button","Press the big mic button in the middle and speak clearly. That's it — I'll listen and do your task."],
+        ["⏰","Try saying anything","Say things like: <b>\"Remind medicine at 8 am\"</b> or <b>\"Weather in Nagpur\"</b>. The reminder will ring on its own at the right time."],
+        ["🆘","In trouble? Press SOS","The red <b>SOS</b> button up top gets you help and sends your location to loved ones. You're ready now — let's start!"]
+      ]}
+  };
+
+  /* ==================== LANGUAGE ==================== */
+  let lang = "hi";
+  const T = {
+    hi:{ tagline:"Sirf boliye — kaam ho jaayega", micLabel:"Boliye", micHint:"Button dabao aur bolo",
+      listening:"Sun rahi hoon...", notesTitle:"Aapke Notes / Schedule", notesEmpty:'Abhi koi note nahi. Boliye "note karo..."',
+      cmdsTitle:"🗣️ Aap ye keh sakte hain:", impactLbl:"baar Awaaz ne aaj madad ki 💚",
+      welcome:"Namaste! Main aapki Awaaz hoon. Button dabaiye aur boliye — main aapka kaam kar dungi.",
+      speechLang:"hi-IN",
+      cmds:[
+        ['⏰','"Shaam 5 baje doctor jana yaad dilao"','sahi time par ALARM bajegi!'],
+        ['💊','"Subah 8 baje dawai yaad dilao"','dawai reminder'],
+        ['📖','"Mere notes sunao"','saare notes padhke sunegi'],
+        ['🌤️','"Nagpur ka mausam batao"','live weather bataayegi'],
+        ['📞','"98765 43210 pe call lagao"','call lag jaayegi'],
+        ['🆘','"SOS" / laal button','emergency madad + call'],
+        ['📍','"Meri location bhejo"','apno ko WhatsApp par location'],
+        ['🔁','"Roz subah 8 baje dawai yaad dilao"','har din bajegi!'],
+        ['🗑️','"Pehla note hatao" / "sab hatao"','bol ke note delete'],
+        ['🧮','"25 aur 30 jodo"','hisaab kar degi'],
+        ['📅','"Aaj kaunsa din hai"','date/din batayegi'],
+        ['💚','"Sehat ki salah do"','health tip'],
+        ['🔊','"Ye padho... [koi baat]"','padhke sunayegi'],
+        ['🌗','"Dark mode karo"','aankhon ko aaram'],
+        ['🔍','"Text bada karo"','padhne mein aasaan'],
+      ]
+    },
+    mr:{ tagline:"फक्त बोला — काम होईल", micLabel:"बोला", micHint:"बटण दाबा आणि बोला",
+      listening:"ऐकत आहे...", notesTitle:"तुमच्या नोंदी", notesEmpty:'नोंद नाही. "नोट कर" म्हणा',
+      cmdsTitle:"🗣️ तुम्ही असे म्हणू शकता:", impactLbl:"वेळा आवाजने आज मदत केली 💚",
+      welcome:"नमस्कार! मी तुमची आवाज आहे. बटण दाबा आणि बोला.",
+      speechLang:"mr-IN",
+      cmds:[
+        ['⏰','"संध्याकाळी 5 वाजता डॉक्टर आठवण कर"','योग्य वेळी अलार्म वाजेल!'],
+        ['💊','"सकाळी 8 वाजता औषध आठवण कर"','औषधाची आठवण'],
+        ['📖','"माझ्या नोंदी वाच"','सर्व वाचून दाखवेल'],
+        ['🌤️','"नागपूरचे हवामान सांग"','थेट हवामान सांगेल'],
+        ['📞','"98765 वर कॉल कर"','कॉल लागेल'],
+        ['🆘','"SOS" / लाल बटण','आपत्कालीन मदत + कॉल'],
+        ['📍','"माझी लोकेशन पाठव"','आपल्या माणसांना WhatsApp वर लोकेशन'],
+        ['🔁','"रोज सकाळी 8 वाजता औषध आठवण कर"','दररोज वाजेल!'],
+        ['🗑️','"पहिली नोंद काढ" / "सर्व काढ"','बोलून नोंद डिलीट'],
+        ['🧮','"25 आणि 30 जोड"','हिशोब करेल'],
+        ['📅','"आज कोणता वार आहे"','तारीख/वार सांगेल'],
+        ['💚','"आरोग्य सल्ला दे"','हेल्थ टिप'],
+        ['🔊','"हे वाच..."','वाचून दाखवेल'],
+        ['🌗','"डार्क मोड कर"','डोळ्यांना आराम'],
+        ['🔍','"अक्षरे मोठी कर"','वाचायला सोपे'],
+      ]
+    },
+    en:{ tagline:"Just speak — it's done", micLabel:"Speak", micHint:"Press button and speak",
+      listening:"Listening...", notesTitle:"Your Notes / Schedule", notesEmpty:'No notes yet. Say "note this..."',
+      cmdsTitle:"🗣️ You can say:", impactLbl:"times Awaaz helped today 💚",
+      welcome:"Hello! I am your Awaaz. Press the button and speak — I'll do it for you.",
+      speechLang:"en-IN",
+      cmds:[
+        ['⏰','"Remind me doctor at 5 pm"','ALARM rings at the right time!'],
+        ['💊','"Remind medicine at 8 am"','medicine reminder'],
+        ['📖','"Read my notes"','reads all notes aloud'],
+        ['🌤️','"Weather in Nagpur"','live weather'],
+        ['📞','"Call 98765 43210"','starts a call'],
+        ['🆘','"SOS" / red button','emergency help + call'],
+        ['📍','"Send my location"','WhatsApp location to family'],
+        ['🔁','"Remind medicine every day at 8 am"','rings daily!'],
+        ['🗑️','"Delete first note" / "delete all"','delete notes by voice'],
+        ['🧮','"Add 25 and 30"','does the maths'],
+        ['📅','"What day is today"','tells date/day'],
+        ['💚','"Give a health tip"','wellness tip'],
+        ['🔊','"Read this... [anything]"','reads it aloud'],
+        ['🌗','"Dark mode"','easy on the eyes'],
+        ['🔍','"Make text bigger"','easy to read'],
+      ]
+    }
+  };
+
+  /* ==================== LOCALIZED RESPONSES ==================== */
+  const R = {
+    hi:{
+      noted:(t)=>"ठीक है, मैंने याद रख लिया: "+t,
+      askNote:"क्या याद रखूँ? बोलिए 'नोट करो' के बाद अपनी बात।",
+      noNotes:"आपने अभी तक कोई नोट नहीं बनाया।",
+      yourNotes:(l)=>"आपके नोट्स हैं: "+l,
+      weatherFetching:(c)=>c+" का मौसम पता कर रही हूँ...",
+      weatherNotFound:(c)=>"माफ़ कीजिए, "+c+" का मौसम नहीं मिल पाया। सही शहर का नाम बोलिए।",
+      weatherMsg:(name,t,desc,h)=>name+" में अभी "+t+" डिग्री तापमान है, "+desc+"। नमी "+h+" प्रतिशत है।",
+      weatherNoNet:"मौसम के लिए इंटरनेट चाहिए। कृपया इंटरनेट चालू कीजिए और दोबारा कोशिश कीजिए।",
+      calling:(d)=>d+" पर कॉल लगाई जा रही है...",
+      askNumber:"कृपया नंबर बोलिए, जैसे: '98765 43210 पर कॉल लगाओ'। (फ़ोन पर ही कॉल लगेगी।)",
+      askRead:"क्या पढ़ूँ? बोलिए: 'ये पढ़ो' के बाद अपनी बात।",
+      timeMsg:(h,m,ap)=>"अभी "+h+" बजकर "+m+" मिनट हुए हैं, "+ap+" का समय।",
+      scamMsg:"अगर कोई SMS, OTP, PIN या पैसे माँगे, या लॉटरी/इनाम का लालच दे — वो स्कैम है। कभी जवाब मत दीजिए, ब्लॉक कर दीजिए। किसी को भी OTP मत बताइए।",
+      micPerm:"माइक्रोफ़ोन की अनुमति चाहिए। एड्रेस बार में लॉक आइकन दबाकर Microphone 'Allow' कीजिए, फिर रिफ्रेश कीजिए।",
+      fallback:(r)=>"मैंने सुना: '"+r+"'. आप कह सकते हैं — नोट करो, मेरे नोट्स सुनाओ, मौसम बताओ, कॉल लगाओ, स्कैम चेक करो, या ये पढ़ो।",
+      dayMorning:"सुबह",dayNoon:"दोपहर",dayEve:"शाम",dayNight:"रात",youLabel:"आप",
+      remindSet:(t,tm)=>"ठीक है! मैं आपको "+tm+" बजे याद दिलाऊँगी: "+t,
+      remindNow:(t)=>"⏰ याद दिलाना! अभी का काम: "+t,
+      notifTitle:"⏰ Awaaz याद दिला रही है!",
+      medSet:(t,tm)=>"दवाई का रिमाइंडर लगा दिया — "+tm+" बजे: "+t,
+      sosMsg:"🆘 आपातकालीन मदद! घबराइए मत। नज़दीकी व्यक्ति को कॉल कर रही हूँ। अगर कोई नहीं, तो 112 (आपातकालीन नंबर) दबाइए।",
+      fontBig:"अक्षर बड़े कर दिए हैं।",fontSmall:"अक्षर छोटे कर दिए हैं।",
+      sosSet:(n)=>"आपातकालीन नंबर सेव हो गया: "+n+"। अब SOS दबाने पर इसी पर कॉल जाएगी।",
+      dateMsg:(d)=>"आज "+d+" है।",
+      calcMsg:(r)=>"जवाब है: "+r,
+      healthTip:()=>{const t=["रोज़ थोड़ा पानी पीते रहिए, शरीर को ज़रूरत है। 💧","सुबह थोड़ी धूप और हल्की सैर सेहत के लिए अच्छी है। ☀️","दवाई समय पर लीजिए, मैं याद दिला सकती हूँ। 💊","गहरी साँस लीजिए, तनाव कम होगा। 🧘","समय पर खाना खाइए, और मीठा कम कीजिए। 🍎"];return t[Math.floor(Math.random()*t.length)];},
+      locFinding:"आपकी जगह (location) ढूँढ रही हूँ, ज़रा रुकिए...",
+      locSent:"📍 आपकी location तैयार है! WhatsApp खुल रहा है — बस भेज दीजिए, आपके अपनों को पता चल जाएगा आप कहाँ हैं।",
+      locFail:"माफ़ कीजिए, location नहीं मिल पाई। कृपया location चालू कीजिए और दोबारा बोलिए।",
+      dailySet:(t,tm)=>"ठीक है! अब मैं आपको हर रोज़ "+tm+" बजे याद दिलाऊँगी: "+t,
+      snoozed:"ठीक है, 10 मिनट बाद फिर याद दिलाऊँगी।",
+      deleted:(t)=>"हटा दिया: "+t,
+      deletedAll:"सारे नोट हटा दिए।",
+      delFail:"कौन सा नोट हटाऊँ, समझ नहीं आया। बोलिए 'पहला नोट हटाओ' या 'सब हटाओ'।",
+      darkOn:"आँखों के आराम वाला डार्क मोड चालू कर दिया।",
+      darkOff:"वापस रोशनी वाला मोड चालू कर दिया।"
+    },
+    mr:{
+      noted:(t)=>"ठीक आहे, मी लक्षात ठेवले: "+t,
+      askNote:"काय लक्षात ठेवू? 'नोट कर' नंतर तुमचं बोला.",
+      noNotes:"तुम्ही अजून कोणतीही नोंद केली नाही.",
+      yourNotes:(l)=>"तुमच्या नोंदी आहेत: "+l,
+      weatherFetching:(c)=>c+" चे हवामान पाहत आहे...",
+      weatherNotFound:(c)=>"माफ करा, "+c+" चे हवामान मिळाले नाही. योग्य शहराचे नाव सांगा.",
+      weatherMsg:(name,t,desc,h)=>name+" मध्ये आत्ता "+t+" डिग्री तापमान आहे, "+desc+". आर्द्रता "+h+" टक्के आहे.",
+      weatherNoNet:"हवामानासाठी इंटरनेट हवे. कृपया इंटरनेट चालू करा आणि पुन्हा प्रयत्न करा.",
+      calling:(d)=>d+" वर कॉल लावत आहे...",
+      askNumber:"कृपया नंबर सांगा, जसे: '98765 43210 वर कॉल कर'. (फोनवरच कॉल लागेल.)",
+      askRead:"काय वाचू? म्हणा: 'हे वाच' नंतर तुमचं बोला.",
+      timeMsg:(h,m,ap)=>"आत्ता "+h+" वाजून "+m+" मिनिटे झाली आहेत, "+ap+" ची वेळ.",
+      scamMsg:"जर कोणी SMS, OTP, PIN किंवा पैसे मागत असेल, किंवा लॉटरी/बक्षिसाचे आमिष देत असेल — तो स्कॅम आहे. कधीही उत्तर देऊ नका, ब्लॉक करा. कोणालाही OTP सांगू नका.",
+      micPerm:"मायक्रोफोनची परवानगी हवी. अ‍ॅड्रेस बार मधील लॉक चिन्ह दाबून Microphone 'Allow' करा, मग रिफ्रेश करा.",
+      fallback:(r)=>"मी ऐकले: '"+r+"'. तुम्ही म्हणू शकता — नोट कर, माझ्या नोंदी वाच, हवामान सांग, कॉल कर, स्कॅम चेक कर, किंवा हे वाच.",
+      dayMorning:"सकाळ",dayNoon:"दुपार",dayEve:"संध्याकाळ",dayNight:"रात्र",youLabel:"तुम्ही",
+      remindSet:(t,tm)=>"ठीक आहे! मी तुम्हाला "+tm+" वाजता आठवण करून देईन: "+t,
+      remindNow:(t)=>"⏰ आठवण! आत्ताचे काम: "+t,
+      notifTitle:"⏰ Awaaz आठवण करत आहे!",
+      medSet:(t,tm)=>"औषधाची आठवण लावली — "+tm+" वाजता: "+t,
+      sosMsg:"🆘 आपत्कालीन मदत! घाबरू नका. जवळच्या व्यक्तीला कॉल करत आहे. कोणी नसेल तर 112 (आपत्कालीन नंबर) दाबा.",
+      fontBig:"अक्षरे मोठी केली आहेत.",fontSmall:"अक्षरे लहान केली आहेत.",
+      sosSet:(n)=>"आपत्कालीन नंबर सेव्ह झाला: "+n+"। आता SOS दाबल्यावर याच नंबरवर कॉल जाईल.",
+      dateMsg:(d)=>"आज "+d+" आहे.",
+      calcMsg:(r)=>"उत्तर आहे: "+r,
+      healthTip:()=>{const t=["रोज थोडे पाणी पीत राहा, शरीराला गरज आहे. 💧","सकाळी थोडे ऊन आणि हलकी चालणे तब्येतीसाठी चांगले. ☀️","औषध वेळेवर घ्या, मी आठवण करून देऊ शकते. 💊","दीर्घ श्वास घ्या, ताण कमी होईल. 🧘","वेळेवर जेवा, आणि गोड कमी करा. 🍎"];return t[Math.floor(Math.random()*t.length)];},
+      locFinding:"तुमची जागा (location) शोधत आहे, जरा थांबा...",
+      locSent:"📍 तुमची location तयार आहे! WhatsApp उघडत आहे — फक्त पाठवा, तुमच्या माणसांना कळेल तुम्ही कुठे आहात.",
+      locFail:"माफ करा, location मिळाली नाही. कृपया location चालू करा आणि पुन्हा बोला.",
+      dailySet:(t,tm)=>"ठीक आहे! आता मी तुम्हाला दररोज "+tm+" वाजता आठवण करून देईन: "+t,
+      snoozed:"ठीक आहे, 10 मिनिटांनी पुन्हा आठवण करेन.",
+      deleted:(t)=>"काढून टाकले: "+t,
+      deletedAll:"सर्व नोंदी काढून टाकल्या.",
+      delFail:"कोणती नोंद काढू, समजले नाही. म्हणा 'पहिली नोंद काढ' किंवा 'सर्व काढ'.",
+      darkOn:"डोळ्यांना आराम देणारा डार्क मोड चालू केला.",
+      darkOff:"पुन्हा उजेडाचा मोड चालू केला."
+    },
+    en:{
+      noted:(t)=>"Okay, I've noted: "+t,
+      askNote:"What should I note? Say 'note this' followed by your words.",
+      noNotes:"You haven't made any notes yet.",
+      yourNotes:(l)=>"Your notes are: "+l,
+      weatherFetching:(c)=>"Getting the weather for "+c+"...",
+      weatherNotFound:(c)=>"Sorry, I couldn't find the weather for "+c+". Please say a correct city name.",
+      weatherMsg:(name,t,desc,h)=>"In "+name+" it's currently "+t+" degrees, "+desc+". Humidity is "+h+" percent.",
+      weatherNoNet:"Weather needs the internet. Please turn on the internet and try again.",
+      calling:(d)=>"Calling "+d+"...",
+      askNumber:"Please say a number, like: 'Call 98765 43210'. (The call starts on your phone.)",
+      askRead:"What should I read? Say: 'Read this' followed by your words.",
+      timeMsg:(h,m,ap)=>"It's "+h+":"+(m<10?"0"+m:m)+", "+ap+".",
+      scamMsg:"If anyone asks for an SMS, OTP, PIN or money, or tempts you with a lottery/prize — it's a SCAM. Never reply, block them. Never share your OTP with anyone.",
+      micPerm:"Microphone permission is needed. Tap the lock icon in the address bar, set Microphone to 'Allow', then refresh.",
+      fallback:(r)=>"I heard: '"+r+"'. You can say — note this, read my notes, tell weather, make a call, check scam, or read this.",
+      dayMorning:"morning",dayNoon:"afternoon",dayEve:"evening",dayNight:"night",youLabel:"You",
+      remindSet:(t,tm)=>"Okay! I'll remind you at "+tm+": "+t,
+      remindNow:(t)=>"⏰ Reminder! It's time for: "+t,
+      notifTitle:"⏰ Awaaz is reminding you!",
+      medSet:(t,tm)=>"Medicine reminder set for "+tm+": "+t,
+      sosMsg:"🆘 Emergency help! Stay calm. Calling your emergency contact. If no one, dial 112 (emergency number).",
+      fontBig:"Text made bigger.",fontSmall:"Text made smaller.",
+      sosSet:(n)=>"Emergency number saved: "+n+". Now pressing SOS will call this number.",
+      dateMsg:(d)=>"Today is "+d+".",
+      calcMsg:(r)=>"The answer is: "+r,
+      healthTip:()=>{const t=["Keep sipping water through the day, your body needs it. 💧","Some morning sunlight and a short walk is great for health. ☀️","Take your medicine on time, I can remind you. 💊","Take deep breaths, it reduces stress. 🧘","Eat on time, and cut down on sugar. 🍎"];return t[Math.floor(Math.random()*t.length)];},
+      locFinding:"Finding your location, please wait...",
+      locSent:"📍 Your location is ready! WhatsApp is opening — just send it, and your loved ones will know where you are.",
+      locFail:"Sorry, I couldn't get your location. Please turn on location and try again.",
+      dailySet:(t,tm)=>"Okay! I'll now remind you every day at "+tm+": "+t,
+      snoozed:"Okay, I'll remind you again in 10 minutes.",
+      deleted:(t)=>"Deleted: "+t,
+      deletedAll:"Deleted all notes.",
+      delFail:"I didn't understand which note to delete. Say 'delete first note' or 'delete all'.",
+      darkOn:"Turned on eye-friendly dark mode.",
+      darkOff:"Turned the light mode back on."
+    }
+  };
+
+  function setLang(l){
+    if(!T[l]) l="hi";   // guard against invalid language
+    lang=l;
+    document.documentElement.lang=l;
+    document.querySelectorAll(".lang-btn").forEach(b=>b.classList.toggle("active",b.dataset.lang===l));
+    const t=T[l];
+    document.getElementById("tagline").textContent=t.tagline;
+    document.getElementById("micLabel").textContent=t.micLabel;
+    document.getElementById("micHint").textContent=t.micHint;
+    document.getElementById("notesTitle").textContent=t.notesTitle;
+    document.getElementById("cmdsTitle").textContent=t.cmdsTitle;
+    document.getElementById("impactLbl").textContent=t.impactLbl;
+    const tb=document.getElementById("tutorBtn"); if(tb) tb.textContent=(OB[l]&&OB[l].tutor)||(l==="mr"?"पुन्हा शिकवणी बघा":l==="en"?"Show tutorial again":"Tutorial dobara dekho");
+    renderCmds(); renderNotes();
+  }
+  function renderCmds(){
+    document.getElementById("cmdsList").innerHTML = T[lang].cmds.map(c=>
+      `<div class="cmd">${c[0]} <b>${c[1]}</b><br><small style="color:var(--muted)">${c[2]}</small></div>`
+    ).join("");
+  }
+
+  /* ==================== IMPACT ==================== */
+  let impact=0;
+  function bump(){ impact++; document.getElementById("impactNum").textContent=impact; try{ localStorage.setItem("awaaz_impact",impact); }catch(e){} }
+  function loadImpact(){ try{ const v=parseInt(localStorage.getItem("awaaz_impact")); if(!isNaN(v)){ impact=v; document.getElementById("impactNum").textContent=impact; } }catch(e){} }
+
+  /* ==================== VOICE OUTPUT ==================== */
+  let lastSpoken="", voices=[];
+  function loadVoices(){ try{ voices=speechSynthesis.getVoices()||[]; }catch(e){} }
+  try{ loadVoices(); if(window.speechSynthesis) speechSynthesis.onvoiceschanged=loadVoices; }catch(e){}
+  function speak(text){
+    lastSpoken=text;
+    try{
+      speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text);
+      u.lang=T[lang].speechLang; u.rate=0.85; u.pitch=1;
+      if(!voices||!voices.length) loadVoices();
+      const want=T[lang].speechLang.split("-")[0];
+      // prefer exact language; for Marathi fall back to Hindi voice (script is same, better than English)
+      let m=voices.find(v=>v.lang&&v.lang.toLowerCase().startsWith(want));
+      if(!m && want==="mr") m=voices.find(v=>v.lang&&v.lang.toLowerCase().startsWith("hi"));
+      if(m) u.voice=m;
+      speechSynthesis.speak(u);
+    }catch(e){}
+  }
+  function replayLast(){ if(lastSpoken) speak(lastSpoken); }
+
+  function reply(youText, awaazText){
+    document.getElementById("convoPlaceholder").style.display="none";
+    document.getElementById("convoContent").style.display="block";
+    document.getElementById("youText").textContent=youText?("🗣️ "+R[lang].youLabel+": "+youText):"";
+    document.getElementById("awaazText").textContent="🎙️ "+awaazText;
+    document.getElementById("replayBtn").classList.add("show");
+    speak(awaazText); bump();
+  }
+
+  /* ==================== TIME PARSING (for reminders) ==================== */
+  // Understands: "5 baje", "5:30", "subah 8", "shaam 6", "kal 5 baje", "at 5 pm", "10 वाजता"
+  function parseTime(raw){
+    const s=raw.toLowerCase();
+    let hour=null, min=0;
+    // 5:30 / 5.30 style
+    let m=s.match(/(\d{1,2})[:\.](\d{2})/);
+    if(m){ hour=parseInt(m[1]); min=parseInt(m[2]); }
+    else{
+      // "5 baje", "5 pm", "8 vaje", "10 वाजता", "at 5"
+      m=s.match(/(\d{1,2})\s*(baje|baj|vaje|vajta|वाजता|बजे|pm|am|o'?clock)/);
+      if(m) hour=parseInt(m[1]);
+      else{
+        m=s.match(/\bat\s+(\d{1,2})\b/); if(m) hour=parseInt(m[1]);
+      }
+    }
+    if(hour===null) return null;
+    // AM/PM + day-part heuristics
+    const pm=/\bpm\b|shaam|sham|raat|rat|dopahar|संध्याकाळ|रात्र|दुपार|शाम|रात|दोपहर/.test(s);
+    const am=/\bam\b|subah|savere|sakal|सकाळ|सुबह|सवेरे/.test(s);
+    if(pm && hour<12) hour+=12;
+    if(am && hour===12) hour=0;
+    // if plain hour 1-7 with no am/pm, assume evening/PM (common for elderly: "5 baje" = 5 PM)
+    if(!pm && !am && hour>=1 && hour<=7) hour+=12;
+    if(hour>23) hour=23;
+    const now=new Date();
+    let d=new Date();
+    d.setHours(hour, min, 0, 0);
+    // "kal" (tomorrow) or if time already passed -> next day
+    const tomorrow=/\bkal\b|tomorrow|उद्या|कल/.test(s);
+    if(tomorrow || d.getTime()<=now.getTime()) d.setDate(d.getDate()+1);
+    return d.getTime();
+  }
+  function cleanNoteText(raw){
+    return raw
+      .replace(/(please|kripya|कृपया)/gi,"")
+      .replace(/\b(note karo|note kar|note this|note it down|yaad rakho|yaad rakhna|yaad dilao|yaad dila|remind me to|remind me|reminder lagao|reminder|likh lo|likho|nond kar|schedule karo|schedule kar|याद रख|याद दिला|नोट कर|नोंद कर|आठवण कर|लक्षात ठेव)\b/gi,"")
+      .replace(/\b(kal|tomorrow|उद्या|कल)\b/gi,"")
+      .replace(/\b(roz|rojana|har din|hamesha|daily|every ?day|दररोज|रोज|हर दिन|प्रतिदिन)\b/gi,"")
+      .replace(/(\d{1,2})[:\.](\d{2})/g,"")
+      .replace(/(\d{1,2})\s*(baje|baj|vaje|vajta|वाजता|बजे|pm|am|o'?clock)/gi,"")
+      .replace(/\bat\s+\d{1,2}\b/gi,"")
+      .replace(/(subah|shaam|sham|raat|rat|dopahar|savere|sakal|सकाळ|सुबह|संध्याकाळ|रात्र|दुपार|शाम|रात|दोपहर)/gi,"")
+      .replace(/\b(ko|par|pe|मला|को|पर)\b/gi,"")
+      .replace(/[?.!,]/g,"").replace(/\s+/g," ").trim();
+  }
+
+  /* ==================== VOICE CALCULATOR ==================== */
+  function calcFromSpeech(raw){
+    let s=" "+raw.toLowerCase()+" ";
+    // word -> operator (Hindi/Marathi/English)
+    s=s.replace(/(plus|add|jodo|jod|aur|aani|ani|और|आणि|अधिक|जोड|जोड़ो|and)/g," + ")
+       .replace(/(minus|ghata|घटा|कम|वजा|माइनस|घटाओ|vaja)/g," - ")
+       .replace(/(into|guna|multiply|times|x|×|गुणा|गुणाकार)/g," * ")
+       .replace(/(divide|bhag|भाग|÷|भागाकार|divided by)/g," / ");
+    // keep only digits and operators
+    let expr=(s.match(/[\d\.\+\-\*\/\s]+/g)||[]).join(" ").replace(/\s+/g," ").trim();
+    // collapse multiple operators (e.g. "+ +" -> "+")
+    expr=expr.replace(/([\+\-\*\/])\s*([\+\-\*\/])+/g,"$1");  // "+ +" -> "+"
+
+    // --- POSTFIX / voice-order fallback ---
+    // Hindi/Marathi often say the operator AFTER both numbers:
+    // "100 me se 40 ghatao" -> "100 40 -",  "25 आणि 30 जोड" -> "25 30 +"
+    // Detect exactly 2 numbers + 1 operator anywhere -> compute num1 (op) num2.
+    const nums=(expr.match(/\d+(?:\.\d+)?/g)||[]).map(Number);
+    const ops=(expr.match(/[\+\-\*\/]/g)||[]);
+    if(nums.length===2 && ops.length>=1){
+      const op=ops[0], a=nums[0], b=nums[1];
+      let r = op==="+"?a+b : op==="-"?a-b : op==="*"?a*b : (b!==0?a/b:NaN);
+      if(!isFinite(r)) return null;
+      return Math.round(r*100)/100;
+    }
+
+    // --- INFIX eval path (for 3+ numbers, e.g. "2 plus 3 plus 4") ---
+    expr=expr.replace(/^[\+\*\/\s]+/,"").replace(/[\+\-\*\/\s]+$/,"").trim(); // trim dangling ends
+    if(!/\d\s*[\+\-\*\/]\s*\d/.test(expr)) return null;
+    try{
+      if(!/^[\d\.\+\-\*\/\s]+$/.test(expr)) return null;
+      // eslint-disable-next-line no-new-func
+      let r=Function('"use strict";return ('+expr+')')();
+      if(typeof r!=="number"||!isFinite(r)) return null;
+      return Math.round(r*100)/100;
+    }catch(e){ return null; }
+  }
+
+  /* ==================== SOS EMERGENCY ==================== */
+  function doSOS(){
+    const num=getEmergencyNum();
+    reply("🆘 SOS", R[lang].sosMsg);
+    try{ if(navigator.vibrate) navigator.vibrate([300,150,300,150,300]); }catch(e){}
+    setTimeout(()=>{ try{ window.location.href="tel:"+(num||"112"); }catch(e){} }, 1800);
+  }
+  function getEmergencyNum(){ try{ return localStorage.getItem("awaaz_sos")||""; }catch(e){ return ""; } }
+
+  /* ==================== LIVE LOCATION SHARE (WhatsApp) ==================== */
+  // Buzurg gir jaaye / kho jaaye -> ek voice command se Google Maps location apno ko WhatsApp par
+  function sendLocation(raw){
+    reply(raw||"📍 Location", R[lang].locFinding);
+    if(!navigator.geolocation){ speak2(R[lang].locFail); return; }
+    navigator.geolocation.getCurrentPosition(function(pos){
+      const la=pos.coords.latitude.toFixed(6), lo=pos.coords.longitude.toFixed(6);
+      const maps="https://maps.google.com/?q="+la+","+lo;
+      const num=getEmergencyNum();
+      const txt=encodeURIComponent("Meri location: "+maps+" (Awaaz se bheji)");
+      // agar emergency number set hai to seedha usi ko, warna generic share
+      const wa = num ? ("https://wa.me/91"+num+"?text="+txt) : ("https://wa.me/?text="+txt);
+      speak2(R[lang].locSent);
+      setTimeout(function(){ try{ window.open(wa,"_blank"); }catch(e){ window.location.href=wa; } }, 1500);
+    }, function(){ speak2(R[lang].locFail); }, {enableHighAccuracy:true, timeout:10000, maximumAge:0});
+  }
+
+  /* ==================== DARK / HIGH-CONTRAST MODE ==================== */
+  function toggleDark(){
+    const on=document.body.classList.toggle("dark");
+    try{ localStorage.setItem("awaaz_dark", on?"1":"0"); }catch(e){}
+    reply("", on ? R[lang].darkOn : R[lang].darkOff);
+  }
+  function loadDark(){ try{ if(localStorage.getItem("awaaz_dark")==="1") document.body.classList.add("dark"); }catch(e){} }
+
+  /* ==================== SNOOZE ALARM ==================== */
+  let snoozeText="";
+  function snoozeAlarm(){
+    document.getElementById("alarm").classList.remove("show");
+    try{ speechSynthesis.cancel(); }catch(e){}
+    if(snoozeText){
+      notes.push({text:snoozeText, at:Date.now()+10*60*1000, fired:false});
+      saveNotes(); renderNotes();
+    }
+    reply("", R[lang].snoozed);
+  }
+
+  /* ==================== FONT SIZE (accessibility) ==================== */
+  let fontStep=0;
+  function changeFont(dir){
+    fontStep=Math.max(-1, Math.min(3, fontStep+dir));
+    const scale=1+fontStep*0.12;
+    document.body.style.fontSize=(scale*100)+"%";
+    try{ localStorage.setItem("awaaz_font",fontStep); }catch(e){}
+  }
+  function loadFont(){ try{ const f=localStorage.getItem("awaaz_font"); if(f!==null){ fontStep=parseInt(f)||0; const sc=1+fontStep*0.12; document.body.style.fontSize=(sc*100)+"%"; } }catch(e){} }
+
+  /* ==================== NOTIFICATIONS (works when app minimized/background) ==================== */
+  // KILLER FEATURE: buzurg app minimize kar de ya doosri tab par ho, phir bhi
+  // system notification (+ sound + vibrate) se reminder pahunchega. Sirf on-screen alarm nahi.
+  let notifReady=false;
+  function askNotifPermission(){
+    try{
+      if(!("Notification" in window)) return;
+      if(Notification.permission==="granted"){ notifReady=true; return; }
+      if(Notification.permission!=="denied"){
+        Notification.requestPermission().then(p=>{ notifReady=(p==="granted"); }).catch(()=>{});
+      }
+    }catch(e){}
+  }
+  function showNotification(title, body){
+    try{
+      if(!("Notification" in window) || Notification.permission!=="granted") return false;
+      // prefer service-worker notification (more reliable in background), fallback to page Notification
+      if(navigator.serviceWorker && navigator.serviceWorker.ready){
+        navigator.serviceWorker.ready.then(reg=>{
+          try{
+            reg.showNotification(title,{
+              body:body, tag:"awaaz-reminder", renotify:true,
+              requireInteraction:true, vibrate:[500,200,500,200,500],
+              icon:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' rx='20' fill='%23ff7a45'/%3E%3Ctext x='48' y='66' font-size='55' text-anchor='middle'%3E%E2%8F%B0%3C/text%3E%3C/svg%3E"
+            });
+          }catch(e){ try{ new Notification(title,{body:body}); }catch(e2){} }
+        }).catch(()=>{ try{ new Notification(title,{body:body}); }catch(e){} });
+      } else {
+        new Notification(title,{body:body});
+      }
+      return true;
+    }catch(e){ return false; }
+  }
+
+  /* ==================== REMINDER ALARM ENGINE ==================== */
+  let alarmAudio=null;
+  function checkReminders(){
+    const now=Date.now();
+    let changed=false;
+    notes.forEach(n=>{
+      if(n.at && !n.fired && now>=n.at){
+        fireAlarm(n.text);
+        if(n.daily){
+          // recurring: reschedule for tomorrow, don't mark permanently fired
+          n.at = n.at + 24*60*60*1000;
+          // in case app was closed for days, jump forward until in the future
+          while(n.at <= now){ n.at += 24*60*60*1000; }
+        } else {
+          n.fired=true;
+        }
+        changed=true;
+      }
+    });
+    if(changed) saveNotes();
+  }
+  function fireAlarm(text){
+    snoozeText=text;
+    const box=document.getElementById("alarm");
+    document.getElementById("alarmMsg").textContent=R[lang].remindNow(text);
+    box.classList.add("show");
+    try{ if(navigator.vibrate) navigator.vibrate([500,200,500,200,500]); }catch(e){}
+    // ALSO fire a system notification — reaches user even if app is minimized / in another tab
+    showNotification(R[lang].notifTitle, text);
+    // beep tone (works even if TTS voice not loaded) — helps grab attention
+    try{ playBeep(); }catch(e){}
+    // speak it 2 times for elderly
+    speak(R[lang].remindNow(text));
+    setTimeout(()=>speak(R[lang].remindNow(text)), 3500);
+  }
+  // simple attention beep via WebAudio (no external file needed)
+  function playBeep(){
+    try{
+      const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
+      const ctx=new AC();
+      [0,0.4,0.8].forEach(t=>{
+        const o=ctx.createOscillator(), g=ctx.createGain();
+        o.type="sine"; o.frequency.value=880;
+        o.connect(g); g.connect(ctx.destination);
+        g.gain.setValueAtTime(0.001,ctx.currentTime+t);
+        g.gain.exponentialRampToValueAtTime(0.4,ctx.currentTime+t+0.05);
+        g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+0.3);
+        o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+0.32);
+      });
+      setTimeout(()=>{ try{ ctx.close(); }catch(e){} }, 1500);
+    }catch(e){}
+  }
+  function stopAlarm(){
+    document.getElementById("alarm").classList.remove("show");
+    try{ speechSynthesis.cancel(); }catch(e){}
+    renderNotes();
+  }
+
+  /* ==================== VOICE INPUT ==================== */
+  let recognition=null, listening=false;
+  const SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition;
+  function checkSupport(){
+    const w=document.getElementById("warn");
+    if(!SpeechRec){ w.className="warn show"; w.innerHTML="⚠️ Voice ke liye <b>Chrome</b> browser use karein."; return false; }
+    if(location.protocol==="file:"){ w.className="warn show"; w.innerHTML="⚠️ <b>Microphone file:// pe nahi chalega!</b> Ise <b>Netlify pe deploy</b> karke HTTPS link se kholein (ya localhost server). Tab voice chalega."; }
+    return true;
+  }
+  function toggleMic(){
+    if(!SpeechRec){ reply("", T[lang].welcome+" (Voice ke liye Chrome kholein)"); return; }
+    if(listening){ stopListening(); return; }
+    recognition=new SpeechRec();
+    recognition.lang=T[lang].speechLang;
+    recognition.interimResults=false; recognition.maxAlternatives=1;
+    listening=true;
+    document.getElementById("micBtn").classList.add("listening");
+    document.getElementById("micLabel").textContent=T[lang].listening;
+    document.getElementById("waves").classList.add("show");
+    recognition.onresult=(e)=>{ handleCommand(e.results[0][0].transcript); };
+    recognition.onerror=(e)=>{
+      stopListening();
+      if(e&&(e.error==="not-allowed"||e.error==="service-not-allowed")){
+        reply("", R[lang].micPerm);
+        toast("🎤 Mic permission 'Allow' kijiye");
+      } else if(e&&e.error==="no-speech"){ toast("Kuch sunai nahi diya, dobara boliye"); }
+    };
+    recognition.onend=()=>{ stopListening(); };
+    try{ recognition.start(); }catch(err){ stopListening(); toast("Mic shuru nahi hua, dobara try karein"); }
+  }
+  function stopListening(){
+    listening=false;
+    document.getElementById("micBtn").classList.remove("listening");
+    document.getElementById("micLabel").textContent=T[lang].micLabel;
+    document.getElementById("waves").classList.remove("show");
+    try{ if(recognition) recognition.stop(); }catch(e){}
+  }
+
+  /* ==================== NOTES / SCHEDULE ==================== */
+  let notes=[]; // each: {text, at (ms timestamp or null), fired}
+  function esc(str){ return String(str).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  function saveNotes(){ try{ localStorage.setItem("awaaz_notes_v2",JSON.stringify(notes)); }catch(e){} }
+  function loadNotes(){
+    try{
+      const d=localStorage.getItem("awaaz_notes_v2");
+      if(d){ notes=JSON.parse(d)||[]; return; }
+      // migrate old plain-string notes if present
+      const old=localStorage.getItem("awaaz_notes");
+      if(old){ notes=(JSON.parse(old)||[]).map(t=>({text:t,at:null,fired:false})); saveNotes(); }
+    }catch(e){ notes=[]; }
+  }
+  function fmtTime(ms){
+    const d=new Date(ms); let h=d.getHours(),m=d.getMinutes();
+    const ap=h>=12?"PM":"AM"; let h12=h%12; if(h12===0)h12=12;
+    return h12+":"+(m<10?"0"+m:m)+" "+ap;
+  }
+  function renderNotes(){
+    const box=document.getElementById("notesList");
+    if(notes.length===0){ box.innerHTML=`<div class="empty">${esc(T[lang].notesEmpty)}</div>`; return; }
+    box.innerHTML=notes.map((n,i)=>{
+      const when = n.at ? `<span class="when">⏰ ${esc(fmtTime(n.at))}${n.daily?" 🔁":""}</span>` : "";
+      return `<div class="note-item"><span class="txt">📌 ${esc(n.text)}${when}</span><span class="del" onclick="delNote(${i})">🗑️</span></div>`;
+    }).join("");
+  }
+  function delNote(i){ notes.splice(i,1); saveNotes(); renderNotes(); }
+  // voice delete: "sab hatao" / "pehla note hatao" / "aakhri note hatao"
+  function deleteByVoice(raw){
+    const s=raw.toLowerCase();
+    if(notes.length===0){ reply(raw, R[lang].noNotes); return; }
+    // delete all
+    if(/(sab|saare|sara|all|sarv|सब|सारे|सर्व|सगळ)/.test(s)){
+      notes=[]; saveNotes(); renderNotes(); reply(raw, R[lang].deletedAll); return;
+    }
+    // ordinal -> index
+    const wordNum={pehla:1,pehli:1,first:1,pahili:1,pahila:1,"पहला":1,"पहली":1,"पहिला":1,"पहिली":1,
+                   dusra:2,dusri:2,second:2,"दूसरा":2,"दूसरी":2,"दुसरा":2,"दुसरी":2,
+                   tisra:3,tisri:3,third:3,"तीसरा":3,"तिसरा":3};
+    let idx=null;
+    for(const k in wordNum){ if(s.includes(k)){ idx=wordNum[k]; break; } }
+    if(idx===null){ const m=s.match(/\b(\d{1,2})\b/); if(m) idx=parseInt(m[1]); }
+    // last
+    if(/(aakhri|akhri|last|shevat|आखिरी|शेवट|अंतिम)/.test(s)) idx=notes.length;
+    if(idx===null || idx<1 || idx>notes.length){ reply(raw, R[lang].delFail); return; }
+    const removed=notes[idx-1].text;
+    notes.splice(idx-1,1); saveNotes(); renderNotes();
+    reply(raw, R[lang].deleted(removed));
+  }
+
+  /* ==================== BRAIN — command samajhna ==================== */
+  function handleCommand(said){
+    const raw=said.trim();
+    const s=raw.toLowerCase();
+
+    // 0) SET EMERGENCY NUMBER — "SOS number 98765..." / "emergency number set karo"
+    if(/(sos number|emergency number|आपातकालीन नंबर|आपत्कालीन नंबर|sos नंबर|emergency contact)/.test(s)){
+      const digits=(raw.match(/\d/g)||[]).join("");
+      if(digits.length>=6){
+        try{ localStorage.setItem("awaaz_sos",digits); }catch(e){}
+        reply(raw, R[lang].sosSet(digits));
+      } else {
+        reply(raw, R[lang].askNumber);
+      }
+      return;
+    }
+
+    // 0a) SOS — emergency (check FIRST, highest priority)
+    if(/(\bsos\b|emergency|bachao|madad karo urgent|help me|आपातकाल|आपत्काल|बचाओ|इमरजेंसी|मदत करा)/.test(s)){
+      doSOS();
+      return;
+    }
+
+    // 0a2) LIVE LOCATION SHARE (safety — high priority)
+    if(/(meri location|location bhejo|location share|kahan hoon|kaha hoon|share my location|send my location|where am i|माझी लोकेशन|लोकेशन पाठव|मी कुठे|मेरी लोकेशन|लोकेशन भेज|कहाँ हूँ)/.test(s)){
+      sendLocation(raw);
+      return;
+    }
+
+    // 0a3) DARK MODE by voice
+    if(/(dark mode|dark|andhera|अँधेरा|अंधेरा|डार्क|रात वाला|night mode|light mode|ujala|उजाला|उजेड|दिन वाला|roshni)/.test(s)){
+      toggleDark();
+      return;
+    }
+
+    // 0b) FONT SIZE by voice
+    if(/(bada karo|text bada|font bada|zoom|मोठे कर|बड़ा कर|अक्षर बड़े|make (it )?bigger|bigger text)/.test(s)){
+      changeFont(1); reply(raw, R[lang].fontBig); return;
+    }
+    if(/(chhota karo|text chhota|font chhota|छोटे कर|छोटा कर|make (it )?smaller|smaller text)/.test(s)){
+      changeFont(-1); reply(raw, R[lang].fontSmall); return;
+    }
+
+    // 0c) DATE / DAY (before notes, so "din/day/tarikh" isn't caught as note)
+    if(/(aaj kaun|kaunsa din|kaun sa din|konsa din|aaj ki tarikh|tarikh batao|date batao|kaunsi tarikh|which day|what day|what.*date|today.*date|koncha var|konta var|koncha divas|aaj konta|आज.*दिन|आज.*तारीख|तारीख बता|आज कोणता|आजची तारीख|कोणता वार)/.test(s)){
+      const days={hi:["रविवार","सोमवार","मंगलवार","बुधवार","गुरुवार","शुक्रवार","शनिवार"],mr:["रविवार","सोमवार","मंगळवार","बुधवार","गुरुवार","शुक्रवार","शनिवार"],en:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]};
+      const months={hi:["जनवरी","फ़रवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"],mr:["जानेवारी","फेब्रुवारी","मार्च","एप्रिल","मे","जून","जुलै","ऑगस्ट","सप्टेंबर","ऑक्टोबर","नोव्हेंबर","डिसेंबर"],en:["January","February","March","April","May","June","July","August","September","October","November","December"]};
+      const n=new Date();
+      const d=(days[lang]||days.hi)[n.getDay()]+", "+n.getDate()+" "+(months[lang]||months.hi)[n.getMonth()]+" "+n.getFullYear();
+      reply(raw, R[lang].dateMsg(d));
+      return;
+    }
+
+    // 0d) CALCULATOR (before notes, so "jodo/add" isn't caught as note)
+    if(/\d/.test(s) && /(jodo|jod\b|jod |plus|\badd\b|and\b|aur|aani|ghata|minus|guna|multiply|into|times|bhag|divide|अधिक|जोड|घटा|गुणा|भाग|कम|वजा|\d+\s*[\+\-\*x×÷\/]\s*\d+)/.test(s)){
+      const res=calcFromSpeech(raw);
+      if(res!==null){ reply(raw, R[lang].calcMsg(res)); return; }
+    }
+
+    // 0e) HEALTH TIP (before notes)
+    if(/(sehat|swasth|health tip|health salah|salah do|salla de|tabiyat|तब्येत|आरोग्य|सेहत|स्वास्थ्य|सलाह|आरोग्य सल्ला|arogya)/.test(s)){
+      reply(raw, R[lang].healthTip());
+      return;
+    }
+
+    // 0f) READ MY NOTES (before NOTE block, so "notes sunao" isn't caught as new note)
+    if(/(mere note|notes sunao|note sunao|schedule sunao|padho mere|read my note|read notes|majhya nondi|majhya nond|nondi vach|nond vach|माझ्या नोंदी|नोंदी वाच|नोंद वाच|नोट सुनाव|मेरे नोट|नोट्स सुना|नोट सुना)/.test(s)){
+      if(notes.length===0){ reply(raw,R[lang].noNotes); return; }
+      const list = notes.map((n,i)=>(i+1)+". "+n.text+(n.at?(" ("+fmtTime(n.at)+")"):"")).join(". ");
+      reply(raw, R[lang].yourNotes(list));
+      return;
+    }
+
+    // 0g) DELETE NOTE by voice (before note-creation, so "hatao/delete" isn't saved as note)
+    if(/(hatao|hata do|mita do|mitao|delete|remove|kaadh|काढ|हटाओ|मिटाओ|हटा दो|मिटा दो)/.test(s)){
+      deleteByVoice(raw);
+      return;
+    }
+
+    // 1) MEDICINE reminder — "dawai/goli"  (special note)
+    if(/(dawai|dava|goli|medicine|tablet|aushadh|औषध|दवा|दवाई|गोली)/.test(s) && /(note|yaad|remind|reminder|aathvan|athvan|yad|याद|आठवण|लक्षात|schedule|समय|वाजता|vajta|vaje|baje|बजे|at )/.test(s)){
+      const when=parseTime(raw);
+      const daily=/(roz|rojana|har din|hamesha|daily|every day|everyday|दररोज|रोज|हर दिन|प्रतिदिन)/.test(s);
+      let thing=cleanNoteText(raw);
+      if(thing.length<2) thing = (lang==="mr"?"औषध":lang==="en"?"medicine":"दवाई");
+      notes.push({text:"💊 "+thing, at:when, fired:false, daily:(daily&&when)?true:false});
+      saveNotes(); renderNotes();
+      reply(raw, when ? (daily ? R[lang].dailySet("💊 "+thing, fmtTime(when)) : R[lang].medSet(thing, fmtTime(when))) : R[lang].noted("💊 "+thing));
+      return;
+    }
+
+    // 2) NOTE / SCHEDULE / REMINDER — "note karo X", "kal 5 baje X yaad dilao"
+    if(/(note|yaad|yad|likh|nond|schedule|remind|reminder|aathvan|athvan|याद|नोट|नोंद|आठवण|लक्षात)/.test(s)){
+      const when=parseTime(raw);
+      const daily=/(roz|rojana|har din|hamesha|daily|every day|everyday|दररोज|रोज|हर दिन|प्रतिदिन)/.test(s);
+      let thing=cleanNoteText(raw);
+      if(thing.length<2) thing = raw; // fallback: save whole sentence
+      notes.push({text:thing, at:when, fired:false, daily:(daily&&when)?true:false});
+      saveNotes(); renderNotes();
+      reply(raw, when ? (daily ? R[lang].dailySet(thing, fmtTime(when)) : R[lang].remindSet(thing, fmtTime(when))) : R[lang].noted(thing));
+      return;
+    }
+
+    // 3) WEATHER — "mausam batao [city]", "weather in [city]"
+    if(/(mausam|weather|hawaman|हवामान|मौसम)/.test(s)){
+      let city = raw
+        .replace(/(mausam|weather|hawaman|हवामान|मौसम)/gi,"")
+        .replace(/(batao|bata do|bata|kaisa hai|kaisa|kaise|hai|ka|ke|ki|of|in|please|kripya|कृपया|का|चे|मध्ये|सांग|सांगा|कसे आहे|कसं आहे|tell|the|what|is|whats|what's)/gi,"")
+        .replace(/[?.!,]/g,"").trim();
+      if(!city) city="Nagpur";
+      getWeather(city, raw);
+      return;
+    }
+
+    // 4) CALL — "call lagao 98765...", "X ko call karo"
+    if(/(call|phone|कॉल|फोन|lagao|लगाओ|लाव)/.test(s)){
+      const digits=(raw.match(/\d/g)||[]).join("");
+      if(digits.length>=6){
+        reply(raw, R[lang].calling(digits));
+        setTimeout(()=>{ try{ window.location.href="tel:"+digits; }catch(e){} }, 1200);
+      } else {
+        reply(raw, R[lang].askNumber);
+      }
+      return;
+    }
+
+    // 5) READ ALOUD — "ye padho X", "padhke sunao X"
+    if(/(padho|padh|read|vach|पढ़|वाच)/.test(s)){
+      let txt=raw.replace(/(ye padho|padho|padh ke sunao|padhke sunao|read this|read aloud|read|vach|ये पढ़|पढ़ो|पढ़|हे वाच|वाच)/gi,"").trim();
+      if(txt.length<2){ reply(raw,R[lang].askRead); return; }
+      reply(raw, txt);
+      return;
+    }
+
+    // 6) TIME
+    if(/(\btime\b|\bsamay\b|kitne baje|kya baja|vel sang|kiti vajle|\bवेळ\b|\bसमय\b|\bटाइम\b|वाजले|कितने बजे)/.test(s)){
+      const n=new Date();
+      let h=n.getHours(), ap=R[lang].dayMorning;
+      if(h>=12&&h<17)ap=R[lang].dayNoon; else if(h>=17&&h<20)ap=R[lang].dayEve; else if(h>=20||h<4)ap=R[lang].dayNight;
+      reply(raw, R[lang].timeMsg(h,n.getMinutes(),ap));
+      return;
+    }
+
+    // 7) SCAM CHECK — safety helper
+    if(/(scam|fraud|dhoka|thagi|thug|otp|lottery|inaam|फ्रॉड|धोका|घोटाळा|फसवणूक|स्कैम|स्कॅम|ठगी|धोखा|इनाम|लॉटरी)/.test(s)){
+      reply(raw, R[lang].scamMsg);
+      return;
+    }
+
+    // greeting / help
+    if(/(namaste|namaskar|hello|hey|madad|help|नमस्ते|नमस्कार|मदद|हॅलो|हेल्लो)/.test(s)){
+      reply(raw, T[lang].welcome);
+      return;
+    }
+
+    // fallback
+    reply(raw, R[lang].fallback(raw));
+  }
+
+  /* ==================== WEATHER (real, free API) ==================== */
+  async function getWeather(city, raw){
+    reply(raw, R[lang].weatherFetching(city));
+    try{
+      // geocode city -> lat/lon (open-meteo free, no key, CORS ok)
+      const g=await fetch("https://geocoding-api.open-meteo.com/v1/search?name="+encodeURIComponent(city)+"&count=1&language=en");
+      const gd=await g.json();
+      if(!gd.results||!gd.results[0]){ speak2(R[lang].weatherNotFound(city)); return; }
+      const {latitude,longitude,name}=gd.results[0];
+      const w=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+latitude+"&longitude="+longitude+"&current=temperature_2m,relative_humidity_2m,weather_code");
+      const wd=await w.json();
+      const t=Math.round(wd.current.temperature_2m);
+      const h=wd.current.relative_humidity_2m;
+      const desc=weatherDesc(wd.current.weather_code);
+      const msg=R[lang].weatherMsg(name,t,desc,h);
+      speak2(msg);
+    }catch(e){
+      speak2(R[lang].weatherNoNet);
+    }
+  }
+  // update the last reply text + speak (for async results)
+  function speak2(msg){
+    document.getElementById("awaazText").textContent="🎙️ "+msg;
+    speak(msg); bump();
+  }
+  function weatherDesc(code){
+    const D={
+      hi:{clear:"आसमान साफ़ है",cloud:"थोड़े बादल हैं",fog:"कोहरा है",rain:"बारिश हो रही है",snow:"बर्फ़ गिर रही है",storm:"तूफ़ान/बिजली है",ok:"मौसम ठीक है"},
+      mr:{clear:"आकाश स्वच्छ आहे",cloud:"थोडे ढग आहेत",fog:"धुके आहे",rain:"पाऊस पडत आहे",snow:"बर्फ पडत आहे",storm:"वादळ/वीज आहे",ok:"हवामान ठीक आहे"},
+      en:{clear:"the sky is clear",cloud:"a bit cloudy",fog:"foggy",rain:"raining",snow:"snowing",storm:"thunderstorm",ok:"weather is fine"}
+    };
+    const d=D[lang]||D.hi;
+    if(code===0)return d.clear;
+    if([1,2,3].includes(code))return d.cloud;
+    if([45,48].includes(code))return d.fog;
+    if([51,53,55,61,63,65,80,81,82].includes(code))return d.rain;
+    if([71,73,75].includes(code))return d.snow;
+    if([95,96,99].includes(code))return d.storm;
+    return d.ok;
+  }
+
+  /* ==================== UTILS ==================== */
+  function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(window._t); window._t=setTimeout(()=>t.classList.remove("show"),3200); }
+
+  /* ==================== INIT ==================== */
+  /* ==================== ONBOARDING LOGIC ==================== */
+  let obStep=0;
+  function obSeen(){ try{ return localStorage.getItem("awaaz_onboard")==="1"; }catch(e){ return false; } }
+  function obStart(){
+    obStep=0;
+    document.getElementById("onboard").classList.add("show");
+    obRender();
+  }
+  function obSetLang(l){
+    if(!OB[l]) l="hi";
+    setLang(l); // also switch the whole app language
+    document.querySelectorAll("#obLangRow button").forEach(b=>b.classList.toggle("active",b.dataset.l===l));
+    obRender();
+  }
+  function obRender(){
+    const o=OB[lang]||OB.hi;
+    const s=o.steps[obStep];
+    document.getElementById("obEmoji").textContent=s[0];
+    document.getElementById("obTitle").innerHTML=s[1];
+    document.getElementById("obBody").innerHTML=s[2];
+    // dots
+    document.getElementById("obDots").innerHTML=o.steps.map((_,i)=>`<span class="${i===obStep?"on":""}"></span>`).join("");
+    // button label: last step -> "start"
+    document.getElementById("obNext").textContent=(obStep===o.steps.length-1)?o.start:o.next;
+    document.getElementById("obSkip").textContent=o.skip;
+    const lbl=document.getElementById("obListenLbl"); if(lbl) lbl.textContent=o.listen||"Suno";
+    // speak the step aloud (browser may block until first tap; the 🔊 Suno button always works)
+    obSpeakStep();
+  }
+  // Reads the CURRENT onboarding step aloud (title + body), with a speaking animation.
+  function obSpeakStep(){
+    const o=OB[lang]||OB.hi;
+    const s=o.steps[obStep];
+    const plain=(s[1]+". "+s[2]).replace(/<[^>]+>/g,"");
+    const btn=document.getElementById("obListen");
+    if(btn){
+      btn.classList.add("speaking");
+      // clear the highlight after a rough duration so it doesn't stay stuck
+      clearTimeout(window._obSpk);
+      window._obSpk=setTimeout(()=>btn.classList.remove("speaking"), Math.min(9000, 1800+plain.length*45));
+    }
+    speak(plain);
+  }
+  function obNextStep(){
+    const o=OB[lang]||OB.hi;
+    if(obStep < o.steps.length-1){ obStep++; obRender(); }
+    else { obClose(); }
+  }
+  function obClose(){
+    document.getElementById("onboard").classList.remove("show");
+    try{ speechSynthesis.cancel(); }catch(e){}
+    try{ localStorage.setItem("awaaz_onboard","1"); }catch(e){}
+    askNotifPermission(); // good moment to ask, user just finished tutorial
+  }
+
+  function showWelcome(){
+    document.getElementById("convoPlaceholder").style.display="none";
+    document.getElementById("convoContent").style.display="block";
+    document.getElementById("awaazText").textContent="🎙️ "+T[lang].welcome;
+    document.getElementById("replayBtn").classList.add("show");
+  }
+  let firstTap=false;
+  document.addEventListener("click",()=>{ if(!firstTap){ firstTap=true; speak(T[lang].welcome); } });
+  window.addEventListener("load",()=>{
+    loadNotes(); loadFont(); loadDark(); loadImpact(); setLang("hi"); checkSupport(); setTimeout(showWelcome,500);
+    // First-time users: show the friendly onboarding tutorial
+    if(!obSeen()){ setTimeout(obStart, 600); }
+    checkReminders();
+    setInterval(checkReminders, 15000); // check every 15 sec for due reminders
+    // when user comes BACK to the app (from background/another tab), immediately catch missed reminders
+    document.addEventListener("visibilitychange",()=>{ if(!document.hidden) checkReminders(); });
+    window.addEventListener("focus", checkReminders);
+    // ask notification permission on first tap (so reminders reach even when minimized)
+    document.addEventListener("click", askNotifPermission, {once:true});
+    // register a service worker (offline + background notifications)
+    try{
+      if("serviceWorker" in navigator){
+        const swCode="self.addEventListener('install',e=>self.skipWaiting());"+
+          "self.addEventListener('activate',e=>self.clients.claim());"+
+          "self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)))});"+
+          // tapping the notification focuses/opens the Awaaz app
+          "self.addEventListener('notificationclick',e=>{e.notification.close();e.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(cl=>{for(const c of cl){if('focus' in c)return c.focus();}if(clients.openWindow)return clients.openWindow('.');}));});";
+        const blob=new Blob([swCode],{type:"application/javascript"});
+        navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+      }
+    }catch(e){}
+  });
+</script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a23eab299b42ca57',t:'MTc4NTUyMjU2Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
