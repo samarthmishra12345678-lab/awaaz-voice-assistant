@@ -13,7 +13,7 @@
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8?style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
+[![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8?style=flat-square)](https://developer.mozilla.org/en-US/docs/Progressive_web_apps)
 [![Offline](https://img.shields.io/badge/Offline-first-brightgreen?style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)
 [![Languages](https://img.shields.io/badge/Languages-3%20complete-orange?style=flat-square)](#three-languages)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
@@ -63,12 +63,6 @@ The cruel part is how ordinary the failure looks from outside. Nothing is wrong.
 So Awaaz was built around one mandate: **speaking should be enough.** Not "speaking helps." Not "speaking, once you've set it up."
 
 One more thing learned while building it: **a reminder that rings and is ignored is not help.** An unconfirmed dose is the one that matters. That is why Awaaz does not just remind — it notices when nobody answered, and it tells someone who can.
-
-<div align="center">
-  <img src="https://raw.githubusercontent.com/samarthmishra12345678-lab/awaaz-voice-assistant/main/docs/assets/01-hindi-home.png" width="230" alt="Awaaz home screen in Hindi">
-  <img src="https://raw.githubusercontent.com/samarthmishra12345678-lab/awaaz-voice-assistant/main/docs/assets/04-hindi-missed-dose.png" width="230" alt="Missed-dose escalation">
-  <img src="https://raw.githubusercontent.com/samarthmishra12345678-lab/awaaz-voice-assistant/main/docs/assets/02-hindi-conversation.png" width="230" alt="Voice conversation">
-</div>
 
 ---
 
@@ -209,7 +203,7 @@ That is the whole setup. There is **no build step, no package install, no API ke
 
 </details>
 
-Full reference: [`docs/COMMANDS.md`](docs/COMMANDS.md)
+Full reference: [`COMMANDS.md`](COMMANDS.md)
 
 ---
 
@@ -258,7 +252,7 @@ Full reference: [`docs/COMMANDS.md`](docs/COMMANDS.md)
 | Location | Geolocation + `wa.me` deep-link | Human confirmation before anything is sent |
 | Install | Inline PWA manifest (data URI) | Installable without a separate manifest file |
 
-Deep dive: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+Deep dive: [`ARCHITECTURE.md`](ARCHITECTURE.md)
 
 ---
 
@@ -266,11 +260,11 @@ Deep dive: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 
 | Document | What it covers |
 |---|---|
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Command router, reminder + escalation engine, storage schema, language system |
-| [`docs/COMMANDS.md`](docs/COMMANDS.md) | Complete voice-command reference in all three languages |
-| [`docs/TESTING.md`](docs/TESTING.md) | What the automated suite covers and how to run it |
-| [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md) | ARIA, screen readers, font scaling, contrast, motor accessibility |
-| [`docs/PRIVACY.md`](docs/PRIVACY.md) | What is stored, where, and what never leaves the device |
+| [`ARCHITECTURE.md`](ARCHITECTURE.md) | Command router, reminder + escalation engine, storage schema, language system |
+| [`COMMANDS.md`](COMMANDS.md) | Complete voice-command reference in all three languages |
+| [`TESTING.md`](TESTING.md) | What the automated suite covers and how to run it |
+| [`ACCESSIBILITY.md`](ACCESSIBILITY.md) | ARIA, screen readers, font scaling, contrast, motor accessibility |
+| [`PRIVACY.md`](PRIVACY.md) | What is stored, where, and what never leaves the device |
 
 ---
 
@@ -290,7 +284,7 @@ The project ships with an automated **jsdom test suite of 80 cases** covering:
 80 passed, 0 failed
 ```
 
-Details: [`docs/TESTING.md`](docs/TESTING.md)
+Details: [`TESTING.md`](TESTING.md)
 
 ---
 
@@ -308,7 +302,7 @@ Accessibility is not a feature added at the end — it is the whole design.
 - **Huge tap targets** — the primary button is the largest element on screen
 - **Type-to-command fallback** for users who cannot speak or are not understood
 
-Details: [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md)
+Details: [`ACCESSIBILITY.md`](ACCESSIBILITY.md)
 
 ---
 
@@ -320,7 +314,7 @@ Details: [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md)
 - Everything — notes, reminders, caregiver numbers, settings — lives in the phone's own `localStorage`.
 - The only network calls are: weather (Open-Meteo, city name only) and the WhatsApp deep-link the user triggers.
 
-Details: [`docs/PRIVACY.md`](docs/PRIVACY.md)
+Details: [`PRIVACY.md`](PRIVACY.md)
 
 ---
 
@@ -363,12 +357,11 @@ awaaz-voice-assistant/
 ├── awaaz.html          # the entire application (single file, offline)
 ├── README.md           # this file
 ├── LICENSE             # MIT
-└── docs/
-    ├── ARCHITECTURE.md
-    ├── COMMANDS.md
-    ├── TESTING.md
-    ├── ACCESSIBILITY.md
-    └── PRIVACY.md
+├── ARCHITECTURE.md     # command router, reminder + escalation engine
+├── COMMANDS.md         # voice-command reference (3 languages)
+├── TESTING.md          # the 80-case test suite
+├── ACCESSIBILITY.md    # ARIA, screen readers, contrast, motor access
+└── PRIVACY.md          # what is stored, and what never leaves the device
 ```
 
 ---
