@@ -23,7 +23,7 @@
 <i>Press one big button. Speak in हिंदी, मराठी or English. It does the task — and says the answer back out loud.</i>
 
 </div>
-
+help center link 🔗 - stupendous-souffle-fae9dc.netlify.app
 ---
 
 ## Table of contents
